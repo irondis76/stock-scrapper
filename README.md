@@ -1,4 +1,4 @@
-# Stock Viewer
+# Stock-Scrapper-Viewer
 
 This is a simple command-line application written in Go that allows users to view and download stock information. It provides options to view live stock prices, download stock data to a CSV file, and view historical stock data.
 
