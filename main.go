@@ -58,30 +58,31 @@ func main() {
 	}
 }
 
-func viewStocks() {
-	ticker := []string{
-		"MSFT",
-		"IBM",
-		"GE",
-		"UNP",
-		"COST",
-		"MCD",
-		"V",
-		"VMT",
-		"DIS",
-		"MMM",
-		"INTC",
-		"AXP",
-		"AAPL",
-		"BA",
-		"CSCO",
-		"GS",
-		"JPM",
-		"CRM",
-		"VZ",
+func enterSymbols() []string {
+	var n int
+	fmt.Println("Enter number of stocks")
+	_, err := fmt.Scan(&n)
+	if err != nil {
+		log.Println("Error reading input:", err)
+		return nil
 	}
 
-	stocks := scrapeStocks(ticker)
+	tickers := make([]string, n)
+	fmt.Println("Enter stocks")
+	for i := 0; i < n; i++ {
+		_, err := fmt.Scan(&tickers[i])
+		if err != nil {
+			log.Println("Error reading input:", err)
+			return nil
+		}
+	}
+	return tickers
+}
+
+func viewStocks() {
+	tickers := enterSymbols()
+
+	stocks := scrapeStocks(tickers)
 
 	fmt.Println("Stocks:")
 	for _, stock := range stocks {
@@ -90,29 +91,9 @@ func viewStocks() {
 }
 
 func downloadStocks() {
-	ticker := []string{
-		"MSFT",
-		"IBM",
-		"GE",
-		"UNP",
-		"COST",
-		"MCD",
-		"V",
-		"VMT",
-		"DIS",
-		"MMM",
-		"INTC",
-		"AXP",
-		"AAPL",
-		"BA",
-		"CSCO",
-		"GS",
-		"JPM",
-		"CRM",
-		"VZ",
-	}
+	tickers := enterSymbols()
 
-	stocks := scrapeStocks(ticker)
+	stocks := scrapeStocks(tickers)
 
 	file, err := os.Create("stocks.csv")
 	if err != nil {
@@ -136,10 +117,23 @@ func downloadStocks() {
 func viewHistoricalData() {
 	fmt.Println("Viewing Historical Data...")
 
-	symbol := "AAPL"     // Example symbol (Apple Inc.)
-	timeRange := "1month" // Example time range
+	var ticker string
+	fmt.Println("Enter a symbol")
+	_, err := fmt.Scanln(&ticker)
+	if err != nil {
+		log.Fatalln("Error during input", err)
+		return
+	}
 
-	historicalData, err := fetchHistoricalData(symbol, timeRange)
+	var timeRange string
+	fmt.Println("Enter time range (e.g., '1min', '5min', '15min', '30min', '60min', 'daily', 'weekly', 'monthly'): ")
+	_, err = fmt.Scanln(&timeRange)
+	if err != nil {
+		log.Fatalln("Error during input", err)
+		return
+	}
+
+	historicalData, err := fetchHistoricalData(ticker, timeRange)
 	if err != nil {
 		log.Println("Error fetching historical data:", err)
 		return
@@ -163,17 +157,17 @@ func fetchHistoricalData(symbol, timeRange string) ([]HistoricalData, error) {
         return nil, fmt.Errorf("failed to fetch data: %v", err)
     }
 
-    // Parse response body
+    
     var dataResponse map[string]interface{}
     err = json.Unmarshal(resp.Body(), &dataResponse)
     if err != nil {
         return nil, fmt.Errorf("failed to parse response: %v", err)
     }
 
-    // Print response body
+  
     fmt.Println("Response Body:", string(resp.Body()))
 
-    // Implement parsing based on response body structure
+    
 
     return nil, nil
 }
