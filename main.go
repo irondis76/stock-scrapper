@@ -127,7 +127,7 @@ func viewHistoricalData() {
 
 	var timeRange string
 	fmt.Println("Enter time range (e.g., '1min', '5min', '15min', '30min', '60min', 'daily', 'weekly', 'monthly'): ")
-	_, err = fmt.Scanln(&timeRange)
+	_, err = fmt.Scan(&timeRange)
 	if err != nil {
 		log.Fatalln("Error during input", err)
 		return
