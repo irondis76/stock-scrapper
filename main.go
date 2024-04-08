@@ -119,7 +119,7 @@ func viewHistoricalData() {
 
 	var ticker string
 	fmt.Println("Enter a symbol")
-	_, err := fmt.Scanln(&ticker)
+	_, err := fmt.Scan(&ticker)
 	if err != nil {
 		log.Fatalln("Error during input", err)
 		return
@@ -139,12 +139,26 @@ func viewHistoricalData() {
 		return
 	}
 
-	fmt.Println("Historical Data:")
-	for _, data := range historicalData {
-		fmt.Printf("Date: %s, Open: %.2f, High: %.2f, Low: %.2f, Close: %.2f, Volume: %d\n",
-			data.Date, data.Open, data.High, data.Low, data.Close, data.Volume)
+	file, err := os.Create("historical_data.csv")
+	if err != nil {
+		log.Fatalln("Failed to create output CSV file:", err)
 	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	headers := []string{"Date", "Open", "High", "Low", "Close", "Volume"}
+	writer.Write(headers)
+
+	for _, data := range historicalData {
+		record := []string{data.Date, fmt.Sprintf("%.2f", data.Open), fmt.Sprintf("%.2f", data.High), fmt.Sprintf("%.2f", data.Low), fmt.Sprintf("%.2f", data.Close), fmt.Sprintf("%d", data.Volume)}
+		writer.Write(record)
+	}
+
+	fmt.Println("Historical data downloaded to historical_data.csv file successfully")
 }
+
 
 func fetchHistoricalData(symbol, timeRange string) ([]HistoricalData, error) {
     resp, err := resty.New().R().
